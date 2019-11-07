@@ -8,19 +8,19 @@ case object Empty extends SinglyLinkedIntList {
 
   override def tail: IntList = throw new IllegalArgumentException("tail.nil")
 
-  override def isEmpty = ???
+  override def isEmpty = true
 
   override def get(index: Int) = throw new IndexOutOfBoundsException()
 
-  override def append(elem: Int): IntList = ???
+  override def append(elem: Int): IntList = Cons(elem, Empty)
 
-  override def contains(elem: Int): Boolean = ???
+  override def contains(elem: Int): Boolean = false
 
-  override def prepend(elem: Int): IntList = ???
+  override def prepend(elem: Int): IntList = Empty
 
-  override def delete(elem: Int): IntList = ???
+  override def delete(elem: Int): IntList = Empty
 
-  override def deleteAll(elem: Int): IntList = ???
+  override def deleteAll(elem: Int): IntList = Empty
 
-  override def prefix(other: IntList): IntList = ???
+  override def prefix(other: IntList): IntList = other
 }

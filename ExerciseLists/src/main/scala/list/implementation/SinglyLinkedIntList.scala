@@ -24,9 +24,25 @@ object SinglyLinkedIntList {
 
 abstract class SinglyLinkedIntList extends IntList {
 
-  override def size: Int = ???
+  // Todo warum geht folgender Code nicht?
+  // Muss ich Pattern Matching verwenden?
+/*  override def size: Int = {
+    if (tail == Empty) 0
+    else 1 + tail.size
+  }*/
 
-  override def reverse: SinglyLinkedIntList = ???
+  override def size: Int = this match {
+    case Cons(h, t) => 1 + t.size
+    case Empty => 0
+  }
+
+  // TODO
+  override def reverse: IntList = ???
+/*  override def reverse: SinglyLinkedIntList = this match {
+    case Cons(h, t) if (t == Empty) => this
+    case Cons(h, t) => Cons(h, t.tail.reverse)
+    case Empty => this
+  }*/
 
   /** ------------------------------------------
     *
@@ -34,31 +50,64 @@ abstract class SinglyLinkedIntList extends IntList {
     *
     * ------------------------------------------ */
 
-  override def map(mapFunc: Int => Int): IntList = ???
+  override def map(mapFunc: Int => Int): IntList = this match {
+    case Cons(h, t) => Cons(mapFunc(h), t.map(mapFunc))
+    case Empty => Empty
+  }
 
-  override def filter(filterFunc: Int => Boolean): IntList = ???
+  override def filter(filterFunc: Int => Boolean): IntList = this match {
+    case Cons(h, t) if filterFunc(h) => Cons(h, t.filter(filterFunc))
+    case Cons(h, t) if !filterFunc(h) => t.filter(filterFunc)
+    case Empty => Empty
+  }
 
-  override def foldLeft(initial: Int)(reduceFunc: (Int, Int) => Int): Int = ???
+  // TODO angucken
+  override def foldLeft(initial: Int)(reduceFunc: (Int, Int) => Int): Int = this match {
+    case Cons(h, t) => t.foldLeft(reduceFunc(initial, h))(reduceFunc)
+    case Empty => initial
+  }
 
-  override def reduceLeft(reduceFunc: (Int, Int) => Int): Int = ???
-
+  override def reduceLeft(reduceFunc: (Int, Int) => Int): Int = this match {
+    // TODO warum falsch? : case Cons(h, t) => reduceFunc(h, t.reduceLeft(reduceFunc))
+    case Cons(h, t) => t.foldLeft(h)(reduceFunc)
+    case Empty => throw new Exception("lol")
+  }
   /** ------------------------------------------
     *
     * Assignment 1
     *
     * ------------------------------------------ */
 
-  //TODO
-  override def forAll(predicateFunc: Int => Boolean): Boolean = ???
+  //TODO bessere Lösung?
+  override def forAll(predicateFunc: Int => Boolean): Boolean = this match {
+    case Cons(h, t) => predicateFunc(h) match {
+      case true => t.forAll(predicateFunc)
+      case false => false
+    }
+    case Empty => true
+  }
 
-  //TODO
-  override def foldRight(initial: Int)(reduceFunc: (Int, Int) => Int): Int = ???
+  // ich gebe "initial" bis ans Ende mit -> EBEN NICHT
+  override def foldRight(initial: Int)(reduceFunc: (Int, Int) => Int): Int = this match {
+    // case Cons(h, t) => reduceFunc(h, t.foldRight(initial)(reduceFunc))
+    case Cons(h, t) => //TODO
+    case Empty => initial
+  }
 
-  //TODO
-  override def reduceRight(reduceFunc: (Int, Int) => Int): Int = ???
+  override def reduceRight(reduceFunc: (Int, Int) => Int): Int = this match {
+    case Cons(h, t) => t.foldRight(h)(reduceFunc)
+    // case Cons(h, t) => reduceFunc(h, t.foldRight(h)(reduceFunc))
+    case Empty => throw new Exception("lol")
+  }
 
-  //TODO
-  override def insertSorted(elem: Int): IntList = ???
+  //TODO Prüfung ob sortiert
+  override def insertSorted(elem: Int): IntList = this match {
+    case Cons(h, t) => (elem < h) match {
+      case true => Cons(elem, t)
+      case false => Cons(h, t.insertSorted(elem))
+  }
+    case Empty => Cons(elem, Empty)
+  }
 
   //TODO
   override def insertionSort: IntList = ???

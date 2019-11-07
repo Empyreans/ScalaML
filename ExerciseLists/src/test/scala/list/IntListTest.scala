@@ -65,6 +65,9 @@ class IntListTest extends FunSuite {
     assert(SinglyLinkedIntList(4, 5, 6, 6, 7, 6).deleteAll(6) === SinglyLinkedIntList(4, 5, 7))
   }
 
+  test("testReverse") {
+    assert(SinglyLinkedIntList(1, 2, 3).reverse === SinglyLinkedIntList(3, 2, 1))
+  }
 
   /** ------------------------------------------
     *
@@ -90,6 +93,10 @@ class IntListTest extends FunSuite {
         fail()
       else x + y
     }) === 11)
+  }
+
+  test("testReduceLeft") {
+    assert(SinglyLinkedIntList(1, 2, 3).reduceLeft((x, y) => x + y) === 6)
   }
 
   test("testReduceLeft is left to right") {
