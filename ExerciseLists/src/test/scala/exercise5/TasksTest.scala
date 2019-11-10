@@ -20,4 +20,8 @@ class TasksTest extends FunSuite {
   test("testFindMin") {
     assert(Tasks.findMin(SinglyLinkedIntList(3, 5, 1, 2, 3, 4, 5)) === 1)
   }
+
+  test("testAverage") {
+    assert(Tasks.average(SinglyLinkedIntList(1, 2, 3, 4)) === 2)
+  }
 }

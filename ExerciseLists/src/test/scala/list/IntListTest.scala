@@ -162,6 +162,14 @@ class IntListTest extends FunSuite {
     assert(SinglyLinkedIntList(1, 2, 3, 4).insertSorted(5) === SinglyLinkedIntList(1, 2, 3, 4, 5))
   }
 
+  test("testInsertSortedSingleElemBigger") {
+    assert(SinglyLinkedIntList(1).insertSorted(2) === SinglyLinkedIntList(1, 2))
+  }
+
+  test("testInsertSortedSingleElemSmaller") {
+    assert(SinglyLinkedIntList(5).insertSorted(2) === SinglyLinkedIntList(2, 5))
+  }
+
   test("testFoldLeft generic") {
     assert(SinglyLinkedIntList(1, 2, 3).foldLeft(5.0f)((x, y) => x + y) === 11)
   }

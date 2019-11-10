@@ -27,7 +27,14 @@ object Tasks {
   /**
     * countEvenNumbers should count all even numbers of a list
     */
-  // TODO hier aufgehört 06.11
   // def countEvenNumbers(l: IntList): Int = l.foldLeft(0)((x, y) => if (y % 2 == 0) x+1 else 0)
   def countEvenNumbers(l: IntList): Int = l.foldLeft(0)((x, y) => if (y % 2 == 0) x+1 else x)
+
+  /** ------------------------------------------
+    *
+    * Voluntary exercises
+    *
+    * ------------------------------------------ */
+
+  def average(l: IntList): Int = l.foldLeft(0)((acc, x) => acc + x) / l.size
 }

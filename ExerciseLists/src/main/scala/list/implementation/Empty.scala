@@ -16,7 +16,7 @@ case object Empty extends SinglyLinkedIntList {
 
   override def contains(elem: Int): Boolean = false
 
-  override def prepend(elem: Int): IntList = Empty
+  override def prepend(elem: Int): IntList = Cons(elem, Empty)
 
   override def delete(elem: Int): IntList = Empty
 

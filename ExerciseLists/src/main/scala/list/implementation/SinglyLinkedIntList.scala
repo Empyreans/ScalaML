@@ -36,13 +36,17 @@ abstract class SinglyLinkedIntList extends IntList {
     case Empty => 0
   }
 
-  // TODO
-  override def reverse: IntList = ???
-/*  override def reverse: SinglyLinkedIntList = this match {
-    case Cons(h, t) if (t == Empty) => this
-    case Cons(h, t) => Cons(h, t.tail.reverse)
-    case Empty => this
-  }*/
+  // TODO besser verstehen
+  override def reverse: IntList = {
+    @scala.annotation.tailrec
+    def reverse(oldList: IntList, newList: IntList): IntList = oldList match {
+      case Empty => newList
+      case Cons(head, tail) => reverse(tail, newList.prepend(head))
+    }
+
+    reverse(this, Empty)
+  }
+
 
   /** ------------------------------------------
     *
@@ -63,6 +67,11 @@ abstract class SinglyLinkedIntList extends IntList {
 
   // TODO angucken
   override def foldLeft(initial: Int)(reduceFunc: (Int, Int) => Int): Int = this match {
+    case Cons(h, t) => t.foldLeft(reduceFunc(initial, h))(reduceFunc)
+    case Empty => initial
+  }
+
+  override def foldLeft[A](initial: A)(reduceFunc: (A, Int) => A): A = this match {
     case Cons(h, t) => t.foldLeft(reduceFunc(initial, h))(reduceFunc)
     case Empty => initial
   }
@@ -89,8 +98,7 @@ abstract class SinglyLinkedIntList extends IntList {
 
   // ich gebe "initial" bis ans Ende mit -> EBEN NICHT
   override def foldRight(initial: Int)(reduceFunc: (Int, Int) => Int): Int = this match {
-    // case Cons(h, t) => reduceFunc(h, t.foldRight(initial)(reduceFunc))
-    case Cons(h, t) => //TODO
+    case Cons(h, t) => reduceFunc(initial, t.foldRight(h)(reduceFunc))
     case Empty => initial
   }
 
@@ -100,18 +108,21 @@ abstract class SinglyLinkedIntList extends IntList {
     case Empty => throw new Exception("lol")
   }
 
-  //TODO Prüfung ob sortiert
   override def insertSorted(elem: Int): IntList = this match {
     case Cons(h, t) => (elem < h) match {
-      case true => Cons(elem, t)
+      case true => Cons(elem, this) // Fehler war hier, dass ich (elem, t) zurückgegeben habe
       case false => Cons(h, t.insertSorted(elem))
   }
     case Empty => Cons(elem, Empty)
   }
 
-  //TODO
-  override def insertionSort: IntList = ???
+  override def insertionSort: IntList = {
+      def helper(oldList: IntList, newList: IntList): IntList = oldList match {
+        case Cons(h, t) => helper(t, newList.insertSorted(h))
+        case Empty => newList
+      }
 
-  //TODO
-  override def foldLeft[A](initial: A)(reduceFunc: (A, Int) => A): A = ???
+    helper(this, Empty)
+  }
+
 }
