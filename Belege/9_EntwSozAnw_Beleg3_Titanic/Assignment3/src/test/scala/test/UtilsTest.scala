@@ -28,12 +28,13 @@ class UtilsTest extends FunSuite {
 
   test("Extraction & Classification") {
 
+    val bayes = new Bayes(train, test)
     val target = "survived"
     val attributes = List("sex", "age")
 
-    val probabilities = Utils.extraction(train, attributes, target)
+    val probabilities = bayes.extraction(attributes, target)
     println(probabilities)
-    //val predicitions = Utils.classify(test, attributes, probabilities)
-    //println(predicitions)
+    val predicitions = bayes.classify(attributes, probabilities)
+    println(predicitions)
   }
 }
