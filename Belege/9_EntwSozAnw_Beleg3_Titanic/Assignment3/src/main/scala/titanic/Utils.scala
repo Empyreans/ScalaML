@@ -97,7 +97,6 @@ object Utils {
    */
 
 
-  //  LÖSUNG
   //  TODO einfacher?  gleich folden?
   def countAllMissingValues(passengers: List[Map[String, Any]], attList: List[String]) =
     passengers.flatMap(passenger => attList.map(att => if (passenger.contains(att)) null else att).filter(_ != null))

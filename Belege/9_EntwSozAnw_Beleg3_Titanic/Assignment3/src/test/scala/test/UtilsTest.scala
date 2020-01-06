@@ -24,6 +24,9 @@ class UtilsTest extends FunSuite {
     val test_mv = Utils.countAllMissingValues(test, attList)
     assert(train_mv("cabin") == 687 && train_mv("age") == 177 && train_mv("embarked") == 2)
     assert(test_mv("cabin") == 327 && test_mv("age") == 86 && test_mv("fare") == 1)
+
+    // val train_mv2 = Utils.countAllMissingValues2(train, attList)
+    // assert(train_mv2("cabin") == 687)
   }
 
   test("Extraction & Classification") {
@@ -35,6 +38,6 @@ class UtilsTest extends FunSuite {
     val probabilities = bayes.extraction(attributes, target)
     println(probabilities)
     val predicitions = bayes.classify(attributes, probabilities)
-    println(predicitions)
+    // println(predicitions)
   }
 }

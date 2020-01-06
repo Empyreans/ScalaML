@@ -1,13 +1,12 @@
 package titanic
 
 class Bayes(train: List[Map[String, Any]], test: List[Map[String, Any]]) {
-  // TODO Kaggle Export
 
   // TODO das geht schöner
   val allValidAges=test.map(_.getOrElse("age",0.0)).filter(_!=0.0).map(_.toString.toFloat)
   val agesMean=Math.round((allValidAges.reduce(_+_)/allValidAges.size)/10)*10
 
-  def categoryAllocationByTypeAndValue(attr: String, value:String): String = {
+  def categoryAllocationByAttributeAndValue(attr: String, value:String): String = {
     attr match {
       case "age" => value.toFloat.toInt match {
         case v if v < 2               => "infant"
@@ -23,7 +22,7 @@ class Bayes(train: List[Map[String, Any]], test: List[Map[String, Any]]) {
     }
   }
 
-  def replacementForEmptyValueByType(attr: String): String = {
+  def replacementForEmptyValueByAttribute(attr: String): String = {
     attr match {
       case "age" => agesMean.toString
     }
@@ -31,8 +30,8 @@ class Bayes(train: List[Map[String, Any]], test: List[Map[String, Any]]) {
 
   def valueHandling(passengerAttributes: Map[String, Any], attribute: String) = {
     passengerAttributes.get(attribute) match {
-      case Some(e) => categoryAllocationByTypeAndValue(attribute, e.toString)
-      case None => categoryAllocationByTypeAndValue(attribute, replacementForEmptyValueByType(attribute))
+      case Some(value) => categoryAllocationByAttributeAndValue(attribute, value.toString)
+      case None => categoryAllocationByAttributeAndValue(attribute, replacementForEmptyValueByAttribute(attribute))
     }
   }
 
@@ -46,13 +45,10 @@ class Bayes(train: List[Map[String, Any]], test: List[Map[String, Any]]) {
           // no attribute should have an empty value
           attributes.map(attr => Map(attr -> valueHandling(pas, attr))).reduce(_ ++ _)
         )
-    )
-        // if the target class is not given, the that entry is filtered
-        .filter(entry => entry._1 != "")
+    ).filter(entry => entry._1 != "")
     // the data is cleaned now and ready for counting
 
-    println(a)
-
+    // TODO Tuple-Zugriff ersetzen durch Pattern Matching
     // create table by counting classes and attributes
     val b = a.foldLeft(Map[String, (Double, Map[String, Map[String, Double]])]())((acc, a) => a match {
       case (curClass, curAttributes) => acc.get(curClass) match {
@@ -76,39 +72,34 @@ class Bayes(train: List[Map[String, Any]], test: List[Map[String, Any]]) {
       }
     })
 
-    println(b)
-
     // prepare values of table for classification by calculating probabilities
-    val c = b.map(entry => entry match {
-      // case (clazz, (relFreqClass, probTable)) => (clazz, (relFreqClass / passengers.size, probTable.mapValues(prob => prob / relFreqClass)))
-      case (target, (relFreqTarget, probTable)) => (target, (relFreqTarget / train.size, probTable.mapValues(m => m.mapValues(count => count / relFreqTarget))))
-    })
+    val c = b.map {case (target, (relFreqTarget, probTable)) => (target, (relFreqTarget / train.size, probTable.mapValues(m => m.mapValues(count => (count + 1) / (relFreqTarget + m.size) ))))} // Add-One-Smoothing
 
     c
 
   }
 
-  def classify(attributes:List[String], probabilities: Map[String, (Double, Map[String, Map[String, Double]])]) = {
+  def classify(attributes:List[String], probabilities: Map[String, (Double, Map[String, Map[String, Double]])]): List[(String, String)] = {
 
-    val a = test.map(pas => attributes.map(att => (att, valueHandling(pas, att))).filter(e => e._1 != "")) // TODO filtern hier so okay?
-    println(a)
+    val a = test.map(pas => (pas.getOrElse("passengerID", "").toString, attributes.map(att => (att, valueHandling(pas, att))))).filter(e => e._1 != "")
 
     // calculates probabilities for each class given attributes of entry
     // TODO Tidy up, Error Handling
-    val b = a.map(attr => probabilities.map(prob => (prob._1, prob._2._1 * attr.map(a => prob._2._2.get(a._1) match {
+    val b = a.map(attr => (attr._1, probabilities.map(prob => (prob._1, prob._2._1 * attr._2.map(a => prob._2._2.get(a._1) match {
       case Some(e) => e.get(a._2) match {
         case Some(prob) => prob
         case None => 0.0
       }
       case None => 0.0
-    }).product)))
-
-    println(b)
+    }).product))))
 
     // predicts class based on highest calculated probability of each class
     // TODO Tidy up
-    val c = b.map(x => x.foldLeft(("", 0.0))((acc, a) => if (a._2 > acc._2) a else acc))
+    val c = b.map(x => (x._1, x._2.foldLeft(("", 0.0))((acc, a) => if (a._2 > acc._2) a else acc)))
 
-    println(c)
+    // constructs result with relevant values
+    val res = c.map {case (passengerId, (prediction, _)) => (passengerId, prediction)}
+
+    res
   }
 }
