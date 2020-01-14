@@ -36,8 +36,15 @@ class UtilsTest extends FunSuite {
     val attributes = List("sex", "age")
 
     val probabilities = bayes.extraction(attributes, target)
-    println(probabilities)
     val predicitions = bayes.classify(attributes, probabilities)
-    // println(predicitions)
+  }
+
+  test("size") {
+    val l = List(("A", "a"), ("A", "b"), ("B", "a"), ("C", "a"), ("C", "b"))
+
+    l.foldLeft(Map[String, List[String]]())((acc, a) => acc.get(a._1) match {
+      case Some(list) => acc ++ Map(a._1 -> (list :: List(a._2)))
+      case None => acc ++ Map(a._1 -> (List(a._2)))
+    })
   }
 }
